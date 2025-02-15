@@ -5,7 +5,10 @@
   <title>Analisi Testo con Sentiment</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <!-- Librerie esterne per PDF.js e Mammoth.js (se usate per il caricamento file) -->
+  <!-- Manifest per la PWA -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Librerie esterne per PDF.js e Mammoth.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
   
@@ -90,7 +93,6 @@
     /******************************************
      * ANALISI DEL SENTIMENT (dizionario AFINN minimale)
      ******************************************/
-    // Questo dizionario contiene un sottoinsieme di parole e i loro punteggi di sentiment
     const afinn = {
       "buono": 3,
       "eccellente": 5,
@@ -109,7 +111,6 @@
     };
 
     function analyzeSentiment(text) {
-      // Rimuove la punteggiatura e tokenizza
       const words = text
         .toLowerCase()
         .replace(/[^\w\s]/g, "")
@@ -132,7 +133,6 @@
     function analyzeText(text) {
       const outputDiv = document.getElementById("output");
       
-      // Tokenizzazione per la logica delle "affermazioni assolute"
       const words = text
         .toLowerCase()
         .replace(/[.,?!;:()"]/g, "")
@@ -140,7 +140,6 @@
         .filter(Boolean);
       const totalWords = words.length || 1;
       
-      // Set di parole considerate "assolute" e modificatori forti
       const absoluteWords = new Set(["sempre", "mai", "tutti", "nessuno"]);
       const strongModifiers = new Set(["deve", "bisogna", "necessario", "impossibile", "non può"]);
       
