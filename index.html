@@ -1,46 +1,50 @@
 <!DOCTYPE html>
 <html lang="it">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TruthLens - Analisi del testo</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TruthLens - Analisi Documenti</title>
+    
+    <!-- Collegamento al CSS -->
+    <link rel="stylesheet" href="style.css" />
+    
+    <!-- Manifest per PWA -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#007bff" />
 
-  <!-- Foglio di stile -->
-  <link rel="stylesheet" href="style.css" />
+    <!-- Librerie esterne -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>TruthLens</h1>
+      <p>Analizza i tuoi documenti per individuare possibili manipolazioni.</p>
+    </header>
 
-  <!-- Manifest -->
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#007bff" />
+    <!-- Sezione per inserimento manuale testo -->
+    <section id="textSection">
+      <textarea id="manualText" placeholder="Incolla qui il testo..." rows="6"></textarea>
+      <button id="analyzeManualBtn">Analizza Testo</button>
+    </section>
 
-  <!-- Librerie PDF.js e Mammoth.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
-</head>
-<body>
-  <h1>TruthLens</h1>
-  <p>Inserisci un testo o carica un documento per analizzarne la possibile manipolazione.</p>
+    <!-- Sezione per caricare documenti -->
+    <section id="uploadSection">
+      <h2>Carica Documento</h2>
+      <input type="file" id="docInput" accept=".pdf,.docx" />
+      <button id="uploadBtn">Carica e Analizza</button>
+    </section>
 
-  <!-- Pulsante per installare la PWA (nascosto di default) -->
-  <button id="installBtn" class="hidden">Installa PWA</button>
+    <!-- Output dei risultati -->
+    <section id="resultSection">
+      <h2>Risultato Analisi</h2>
+      <div id="result"></div>
+    </section>
 
-  <!-- Area di testo per incollare il testo -->
-  <textarea id="inputText" placeholder="Incolla qui il testo..." rows="6"></textarea>
-  <br>
-  <!-- Pulsante per analizzare il testo incollato -->
-  <button id="analyzeTextBtn">Analizza Testo</button>
-  <br>
+    <!-- Pulsante per installare la PWA (nascosto di default) -->
+    <button id="installBtn" class="hidden">Installa App</button>
 
-  <!-- Sezione per il caricamento dei file PDF o DOCX -->
-  <div class="file-upload">
-    <label for="fileInput">Carica file (PDF o DOCX):</label>
-    <input type="file" id="fileInput" accept=".pdf,.docx" />
-    <button id="loadFileBtn">Carica Documento</button>
-  </div>
-
-  <!-- Output dell'analisi -->
-  <div id="output"></div>
-
-  <!-- Script principale -->
-  <script src="app.js"></script>
-</body>
+    <!-- Script principale -->
+    <script src="app.js"></script>
+  </body>
 </html>
