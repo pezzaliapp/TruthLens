@@ -37,6 +37,7 @@ self.addEventListener("activate", event => {
 
 // Intercettazione delle richieste per servire i file in cache
 self.addEventListener("fetch", event => {
+  // Gestisci solo le richieste che provengono dal tuo dominio
   if (event.request.url.startsWith(self.location.origin)) {
     event.respondWith(
       caches.match(event.request).then(response => {
