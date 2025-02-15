@@ -1,5 +1,5 @@
-const CACHE_NAME = "truthlens-cache-v1";
-const FILES_TO_CACHE = [
+const CACHE_NAME = "truthlens-v1";
+const FILES = [
   "./",
   "./index.html",
   "./style.css",
@@ -14,7 +14,7 @@ const FILES_TO_CACHE = [
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(FILES_TO_CACHE))
+      .then(cache => cache.addAll(FILES))
   );
   self.skipWaiting();
 });
@@ -32,11 +32,10 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  // Risponde dalla cache per richieste interne
   if (event.request.url.startsWith(self.location.origin)) {
     event.respondWith(
       caches.match(event.request)
-        .then(cachedResponse => cachedResponse || fetch(event.request))
+        .then(response => response || fetch(event.request))
     );
   }
 });
