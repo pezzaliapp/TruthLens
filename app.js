@@ -1,4 +1,41 @@
 /***********************************
+ * SERVICE WORKER e INSTALLAZIONE
+ ***********************************/
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(() => console.log("Service Worker registrato correttamente!"))
+      .catch(err => console.log("Errore Service Worker:", err));
+  });
+}
+
+let deferredPrompt;
+const installBtn = document.getElementById('installBtn');
+
+// Ascolta l'evento beforeinstallprompt e mostra il pulsante
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  installBtn.classList.remove('hidden');
+});
+
+// Click sul pulsante di installazione
+installBtn.addEventListener('click', () => {
+  if (deferredPrompt) {
+    installBtn.classList.add('hidden');
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log("PWA installata con successo!");
+      } else {
+        console.log("Installazione PWA annullata.");
+      }
+      deferredPrompt = null;
+    });
+  }
+});
+
+/***********************************
  * FUNZIONE PRINCIPALE: ANALIZZA TESTO
  ***********************************/
 function analyzeText() {
@@ -19,7 +56,7 @@ function analyzeText() {
       let surroundingText = text.substring(Math.max(0, index - 15), Math.min(text.length, index + word.length + 15));
 
       let hasStrongModifier = strongModifiers.some(modifier => surroundingText.includes(modifier));
-      
+
       if (hasStrongModifier) {
         warnings.push(`⚠️ Affermazione assoluta rafforzata: "${word}", verifica il contesto.`);
       } else if (!surroundingText.includes("in alcuni casi") && !surroundingText.includes("può accadere")) {
@@ -51,7 +88,7 @@ function loadFile() {
   }
 
   let reader = new FileReader();
-  
+
   // Se il file è un PDF
   if (file.name.endsWith(".pdf")) {
     reader.onload = function () {
