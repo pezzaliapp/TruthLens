@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TruthLens - Analisi del testo</title>
 
-  <!-- Stile CSS principale -->
-  <link rel="stylesheet" href="style.css">
+  <!-- Link al foglio di stile -->
+  <link rel="stylesheet" href="style.css" />
 
-  <!-- Librerie per PDF e DOCX -->
+  <!-- Manifest -->
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- Librerie PDF e DOCX -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.1.0/docx.min.js"></script>
 
-  <!-- Manifest PWA -->
-  <link rel="manifest" href="manifest.json">
-
-  <!-- Colore della barra in Chrome su Android -->
-  <meta name="theme-color" content="#007bff">
+  <!-- Colore barra del browser su mobile -->
+  <meta name="theme-color" content="#007bff" />
 </head>
 <body>
   <h1>TruthLens</h1>
   <p>Inserisci un testo o carica un documento per analizzarne la possibile manipolazione.</p>
 
-  <!-- Pulsante nascosto per l'installazione della PWA -->
+  <!-- Pulsante per installare la PWA (inizialmente nascosto) -->
   <button id="installBtn" class="hidden">Installa PWA</button>
 
   <!-- Area di testo per incollare manualmente il testo -->
@@ -30,17 +30,17 @@
 
   <!-- Sezione per caricare file .docx e .pdf -->
   <div class="file-upload">
-    <input type="file" id="fileInput" accept=".docx, .pdf">
+    <input type="file" id="fileInput" accept=".docx, .pdf" />
     <button onclick="loadFile()">📂 Carica documento</button>
   </div>
 
-  <!-- Pulsante per avviare l'analisi -->
+  <!-- Pulsante per analizzare il testo -->
   <button onclick="analyzeText()">🔍 Analizza</button>
 
-  <!-- Sezione di output con il risultato dell'analisi -->
+  <!-- Output dell'analisi -->
   <div id="output"></div>
 
-  <!-- Script principale dell'app -->
+  <!-- Script principale -->
   <script src="app.js"></script>
 </body>
 </html>
