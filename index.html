@@ -5,13 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TruthLens - Analisi del testo</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.1.0/docx.min.js"></script>
 </head>
 <body>
     <h1>TruthLens</h1>
-    <p>Inserisci un testo per analizzarne la possibile manipolazione.</p>
+    <p>Inserisci un testo o carica un documento per analizzarne la possibile manipolazione.</p>
+
     <textarea id="inputText" placeholder="Incolla qui il testo..."></textarea>
+
+    <div>
+        <input type="file" id="fileInput" accept=".docx, .pdf">
+        <button onclick="loadFile()">Carica documento</button>
+    </div>
+
     <button onclick="analyzeText()">Analizza</button>
+
     <div id="output"></div>
 
     <script src="app.js"></script>
