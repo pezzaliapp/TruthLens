@@ -2,59 +2,230 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
+  <title>Analisi Testo - PDF & DOCX</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Test File Upload iOS</title>
+
+  <!-- Librerie esterne PDF.js e Mammoth.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+
+  <!-- Stili di base -->
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
+      background: #f4f4f4;
       color: #333;
-      padding: 20px;
       text-align: center;
+      padding: 20px;
+      margin: 0;
     }
-    .upload-container {
-      margin: 20px auto;
-      padding: 15px;
-      border: 1px solid #ccc;
-      background-color: #fff;
-      border-radius: 4px;
-      max-width: 400px;
-    }
-    .upload-container h2 {
+    h1 {
       margin-bottom: 10px;
     }
-    .upload-container input[type="file"] {
-      margin-bottom: 10px;
-    }
-    .upload-container button {
-      padding: 10px 20px;
+    p {
       font-size: 16px;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
+      margin-bottom: 20px;
     }
-    .upload-container button:hover {
-      background-color: #218838;
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 5px;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      margin-bottom: 10px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      resize: vertical;
+    }
+    .buttons {
+      margin: 10px 0;
+    }
+    button, input[type="file"] {
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button {
+      background-color: #007bff;
+      border: none;
+      color: white;
+      border-radius: 4px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #output {
+      margin-top: 20px;
+      font-size: 16px;
+      text-align: left;
+      background: #fafafa;
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 4px;
+      white-space: pre-wrap; /* per mostrare eventuali a capo */
     }
   </style>
 </head>
 <body>
-  <h1>Test File Upload</h1>
-  <div class="upload-container">
-    <h2>Carica Documento</h2>
-    <input type="file" id="fileInput" accept=".pdf,.docx">
-    <br>
-    <button id="uploadBtn">Carica Documento</button>
+
+  <div class="container">
+    <h1>Analisi Testo</h1>
+    <p>Puoi incollare manualmente del testo oppure caricare un file PDF/DOCX.</p>
+
+    <!-- Textarea per testo manuale -->
+    <textarea id="textInput" placeholder="Incolla qui il testo..."></textarea>
+
+    <!-- Pulsante per analizzare il testo manuale -->
+    <div class="buttons">
+      <button id="analyzeBtn">Analizza Testo</button>
+    </div>
+
+    <!-- Sezione caricamento file -->
+    <h2>Carica File (PDF o DOCX)</h2>
+    <input type="file" id="fileInput" accept=".pdf,.docx" />
+    <button id="loadBtn">Carica File</button>
+
+    <!-- Output -->
+    <div id="output"></div>
   </div>
+
   <script>
-    document.getElementById("uploadBtn").addEventListener("click", () => {
-      const fileInput = document.getElementById("fileInput");
-      if (!fileInput.files[0]) {
-        alert("Seleziona un file prima di procedere.");
+    /******************************************
+     * FUNZIONE DI ANALISI TESTO
+     ******************************************/
+    function analyzeText(text) {
+      const outputDiv = document.getElementById("output");
+      outputDiv.innerHTML = ""; // reset
+
+      // Liste di parole da cercare
+      const paroleAssolute = ["sempre", "mai", "tutti", "nessuno", "ogni", "esclusivamente"];
+      const modificatoriForti = ["deve", "bisogna", "necessario", "impossibile", "non può"];
+
+      let warnings = [];
+
+      // Cerchiamo ogni parola assoluta nel testo
+      paroleAssolute.forEach(parola => {
+        let regex = new RegExp("\\b" + parola + "\\b", "gi");
+        let match;
+        while ((match = regex.exec(text)) !== null) {
+          let index = match.index;
+          // Controllo del contesto intorno alla parola (15 caratteri prima e dopo)
+          let start = Math.max(0, index - 15);
+          let end = Math.min(text.length, index + parola.length + 15);
+          let surrounding = text.substring(start, end).toLowerCase();
+
+          // Verifichiamo se c'è un modificatore forte vicino
+          const hasStrongModifier = modificatoriForti.some(m => surrounding.includes(m));
+
+          if (hasStrongModifier) {
+            warnings.push(`⚠️ Affermazione assoluta rafforzata: "${parola}"`);
+          } else {
+            warnings.push(`⚠️ Affermazione assoluta: "${parola}"`);
+          }
+        }
+      });
+
+      // Calcolo punteggio
+      let score = 100 - (warnings.length * 10);
+      if (score < 0) score = 0;
+
+      // Mostra risultati
+      let resultMsg = `Punteggio di affidabilità: ${score}/100`;
+      if (warnings.length > 0) {
+        resultMsg += "\n\n" + warnings.join("\n");
       } else {
-        alert("File selezionato: " + fileInput.files[0].name);
+        resultMsg += "\nNessuna manipolazione evidente.";
+      }
+
+      outputDiv.textContent = resultMsg;
+    }
+
+    /******************************************
+     * EVENTO: ANALIZZA TESTO MANUALE
+     ******************************************/
+    document.getElementById("analyzeBtn").addEventListener("click", () => {
+      const text = document.getElementById("textInput").value;
+      if (!text.trim()) {
+        alert("Inserisci o carica del testo prima di analizzare.");
+        return;
+      }
+      analyzeText(text);
+    });
+
+    /******************************************
+     * EVENTO: CARICA FILE (PDF O DOCX)
+     ******************************************/
+    document.getElementById("loadBtn").addEventListener("click", () => {
+      const fileInput = document.getElementById("fileInput");
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert("Seleziona un file prima di procedere.");
+        return;
+      }
+
+      const reader = new FileReader();
+
+      // Se è PDF
+      if (file.name.toLowerCase().endsWith(".pdf")) {
+        reader.onload = function() {
+          const typedArray = new Uint8Array(this.result);
+          pdfjsLib.getDocument(typedArray).promise.then(pdf => {
+            let textContent = "";
+            let promises = [];
+            for (let i = 1; i <= pdf.numPages; i++) {
+              promises.push(
+                pdf.getPage(i).then(page =>
+                  page.getTextContent().then(tc => {
+                    tc.items.forEach(item => {
+                      textContent += item.str + " ";
+                    });
+                  })
+                )
+              );
+            }
+            Promise.all(promises).then(() => {
+              // Inseriamo il testo estratto nella textarea
+              document.getElementById("textInput").value = textContent.trim();
+              // Analizziamo subito il testo
+              analyzeText(textContent);
+            });
+          }).catch(err => {
+            console.error("Errore nel caricamento PDF:", err);
+            alert("Impossibile elaborare il PDF.");
+          });
+        };
+        reader.readAsArrayBuffer(file);
+
+      // Se è DOCX
+      } else if (file.name.toLowerCase().endsWith(".docx")) {
+        reader.onload = function(event) {
+          const arrayBuffer = event.target.result;
+          mammoth.extractRawText({ arrayBuffer: arrayBuffer })
+            .then(result => {
+              const extractedText = result.value;
+              // Inseriamo il testo estratto nella textarea
+              document.getElementById("textInput").value = extractedText.trim();
+              // Analizziamo subito il testo
+              analyzeText(extractedText);
+            })
+            .catch(err => {
+              console.error("Errore nel caricamento DOCX:", err);
+              alert("Impossibile elaborare il DOCX.");
+            });
+        };
+        reader.readAsArrayBuffer(file);
+
+      } else {
+        alert("Formato non supportato. Carica un file PDF o DOCX.");
       }
     });
   </script>
