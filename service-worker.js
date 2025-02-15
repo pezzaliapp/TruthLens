@@ -1,8 +1,6 @@
 const CACHE_NAME = "truthlens-cache-v1";
-
-// In GitHub Pages, se i file sono tutti nella stessa cartella, possiamo usare percorsi relativi.
 const FILES_TO_CACHE = [
-  "./",            // la root corrente, che corrisponde a /TruthLens/
+  "./", // Carica la root, ovvero /TruthLens/
   "./index.html",
   "./style.css",
   "./app.js",
@@ -13,7 +11,7 @@ const FILES_TO_CACHE = [
   "https://cdnjs.cloudflare.com/ajax/libs/docx/7.1.0/docx.min.js"
 ];
 
-// Installazione del Service Worker e caching dei file
+// Installazione e caching
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -23,7 +21,7 @@ self.addEventListener("install", (event) => {
   self.skipWaiting();
 });
 
-// Attivazione e pulizia della vecchia cache
+// Attivazione e pulizia cache vecchia
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -37,14 +35,13 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-// Intercettazione fetch
+// Intercetta le richieste e serve dalla cache se disponibile
 self.addEventListener("fetch", (event) => {
-  // Intercettiamo richieste allo stesso dominio
+  // Filtra solo richieste interne al dominio
   if (event.request.url.startsWith(self.location.origin)) {
     event.respondWith(
       caches.match(event.request).then((cachedRes) => {
-        if (cachedRes) return cachedRes;
-        return fetch(event.request);
+        return cachedRes || fetch(event.request);
       })
     );
   }
