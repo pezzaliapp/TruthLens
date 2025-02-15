@@ -1,50 +1,59 @@
 <!DOCTYPE html>
 <html lang="it">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TruthLens - Analisi Documenti</title>
-    
-    <!-- Collegamento al CSS -->
-    <link rel="stylesheet" href="style.css" />
-    
-    <!-- Manifest per PWA -->
-    <link rel="manifest" href="manifest.json" />
-    <meta name="theme-color" content="#007bff" />
-
-    <!-- Librerie esterne -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
-  </head>
-  <body>
-    <header>
-      <h1>TruthLens</h1>
-      <p>Analizza i tuoi documenti per individuare possibili manipolazioni.</p>
-    </header>
-
-    <!-- Sezione per inserimento manuale testo -->
-    <section id="textSection">
-      <textarea id="manualText" placeholder="Incolla qui il testo..." rows="6"></textarea>
-      <button id="analyzeManualBtn">Analizza Testo</button>
-    </section>
-
-    <!-- Sezione per caricare documenti -->
-    <section id="uploadSection">
-      <h2>Carica Documento</h2>
-      <input type="file" id="docInput" accept=".pdf,.docx" />
-      <button id="uploadBtn">Carica e Analizza</button>
-    </section>
-
-    <!-- Output dei risultati -->
-    <section id="resultSection">
-      <h2>Risultato Analisi</h2>
-      <div id="result"></div>
-    </section>
-
-    <!-- Pulsante per installare la PWA (nascosto di default) -->
-    <button id="installBtn" class="hidden">Installa App</button>
-
-    <!-- Script principale -->
-    <script src="app.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Pulsante Upload</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      text-align: center;
+      padding-top: 50px;
+    }
+    .upload-container {
+      background: #fff;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      display: inline-block;
+    }
+    input[type="file"] {
+      display: block;
+      margin: 15px auto;
+      font-size: 16px;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+  <div class="upload-container">
+    <h1>Carica Documento</h1>
+    <input type="file" id="fileInput" accept=".pdf,.docx">
+    <button id="uploadButton">Carica Documento</button>
+  </div>
+  <script>
+    document.getElementById("uploadButton").addEventListener("click", function() {
+      const fileInput = document.getElementById("fileInput");
+      if (fileInput.files.length === 0) {
+        alert("Nessun file selezionato.");
+      } else {
+        alert("File selezionato: " + fileInput.files[0].name);
+      }
+    });
+  </script>
+</body>
 </html>
