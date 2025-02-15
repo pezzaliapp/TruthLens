@@ -15,7 +15,7 @@ if ('serviceWorker' in navigator) {
 let deferredPrompt;
 const installBtn = document.getElementById('installBtn');
 
-// Ascolta l'evento e mostra il pulsante di installazione
+// Intercetta l'evento di installazione
 window.addEventListener('beforeinstallprompt', (e) => {
   console.log('Evento beforeinstallprompt catturato!');
   e.preventDefault();
@@ -72,7 +72,7 @@ function analyzeText() {
   if (warnings.length > 0) {
     output.innerHTML = `<strong>Punteggio di affidabilità: ${score}/100</strong><br><br>` + warnings.join("<br>");
   } else {
-    output.innerHTML = `<strong>Punteggio di affidabilità: 100/100 ✅</strong><br><br>Nessuna manipolazione evidente.`;
+    output.innerHTML = `<strong>Punteggio di affidabilità: 100/100 ✅</strong><br>Nessuna manipolazione evidente.`;
   }
 }
 
