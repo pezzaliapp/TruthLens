@@ -1,59 +1,65 @@
+/* Stile generale */
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    padding: 20px;
-    background-color: #f4f4f4;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+  background-color: #f4f4f4;
 }
 
 h1 {
-    color: #333;
+  color: #333;
 }
 
 p {
-    font-size: 18px;
-    color: #666;
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 20px;
 }
 
+/* Area di testo */
 textarea {
-    width: 90%;
-    height: 150px;
-    margin-bottom: 10px;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+  width: 90%;
+  height: 150px;
+  margin-bottom: 10px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
+/* Sezione di caricamento file */
 .file-upload {
-    margin: 10px 0;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
 }
 
 input[type="file"] {
-    padding: 5px;
-    border: 1px solid #ccc;
-    background-color: white;
-    cursor: pointer;
+  padding: 5px;
+  border: 1px solid #ccc;
+  background-color: white;
+  cursor: pointer;
 }
 
+/* Pulsanti generici */
 button {
-    padding: 10px 15px;
-    font-size: 16px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    margin-top: 10px;
+  padding: 10px 15px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  margin: 10px;
 }
 
 button:hover {
-    background-color: #0056b3;
+  background-color: #0056b3;
 }
 
+/* Sezione di output */
 #output {
-    margin-top: 20px;
-    font-size: 18px;
+  margin-top: 20px;
+  font-size: 18px;
 }
