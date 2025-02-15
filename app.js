@@ -5,7 +5,7 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./service-worker.js')
       .then(() => console.log("Service Worker registrato correttamente!"))
-      .catch(err => console.log("Errore Service Worker:", err));
+      .catch(err => console.error("Errore Service Worker:", err));
   });
 }
 
@@ -15,12 +15,11 @@ if ('serviceWorker' in navigator) {
 let deferredPrompt;
 const installBtn = document.getElementById('installBtn');
 
-// Intercetta l'evento di installazione
 window.addEventListener('beforeinstallprompt', (e) => {
   console.log('Evento beforeinstallprompt catturato!');
   e.preventDefault();
   deferredPrompt = e;
-  installBtn.classList.remove('hidden'); // Mostra il pulsante
+  installBtn.classList.remove('hidden');
 });
 
 installBtn.addEventListener('click', () => {
@@ -38,10 +37,9 @@ installBtn.addEventListener('click', () => {
 });
 
 /***********************************
- * FUNZIONE PRINCIPALE: ANALIZZA TESTO
+ * ANALISI DEL TESTO
  ***********************************/
-function analyzeText() {
-  const text = document.getElementById("inputText").value;
+function analyzeText(text) {
   const output = document.getElementById("output");
   let warnings = [];
 
@@ -64,7 +62,7 @@ function analyzeText() {
     }
   });
 
-  // Calcolo punteggio
+  // Calcolo del punteggio
   let score = 100 - (warnings.length * 10);
   if (score < 0) score = 0;
 
@@ -76,11 +74,22 @@ function analyzeText() {
   }
 }
 
+// Evento per analizzare il testo incollato
+document.getElementById("analyzeTextBtn").addEventListener("click", () => {
+  const text = document.getElementById("inputText").value;
+  if (!text.trim()) {
+    alert("Inserisci o carica del testo prima di analizzare.");
+    return;
+  }
+  analyzeText(text);
+});
+
 /***********************************
- * FUNZIONE CARICAMENTO FILE .DOCX E .PDF
+ * CARICAMENTO FILE .PDF E .DOCX
  ***********************************/
 function loadFile() {
-  const file = document.getElementById("fileInput").files[0];
+  const fileInput = document.getElementById("fileInput");
+  const file = fileInput.files[0];
   if (!file) {
     alert("Seleziona un file prima di caricare.");
     return;
@@ -88,10 +97,10 @@ function loadFile() {
 
   const reader = new FileReader();
 
-  if (file.name.endsWith(".pdf")) {
-    // Caricamento PDF con pdf.js
+  if (file.name.toLowerCase().endsWith(".pdf")) {
+    // Elaborazione PDF con PDF.js
     reader.onload = function() {
-      let typedarray = new Uint8Array(this.result);
+      const typedarray = new Uint8Array(this.result);
       pdfjsLib.getDocument(typedarray).promise.then(pdf => {
         let text = "";
         let promises = [];
@@ -106,20 +115,29 @@ function loadFile() {
         }
         Promise.all(promises).then(() => {
           document.getElementById("inputText").value = text.trim();
+          alert("Documento PDF caricato correttamente. Ora premi 'Analizza Testo'.");
         });
+      }).catch(err => {
+        console.error("Errore nel caricamento del PDF:", err);
+        alert("Impossibile elaborare il file PDF.");
       });
     };
     reader.readAsArrayBuffer(file);
 
-  } else if (file.name.endsWith(".docx")) {
-    // Caricamento DOCX con docx.js
-    reader.onload = function() {
-      let arrayBuffer = this.result;
-      let doc = new window.docx.Document(arrayBuffer);
-      doc.load().then(content => {
-        let text = content.getBody().map(p => p.getText()).join(" ");
-        document.getElementById("inputText").value = text.trim();
-      });
+  } else if (file.name.toLowerCase().endsWith(".docx")) {
+    // Elaborazione DOCX con Mammoth.js
+    reader.onload = function(event) {
+      const arrayBuffer = event.target.result;
+      mammoth.extractRawText({ arrayBuffer: arrayBuffer })
+        .then(result => {
+          const text = result.value;
+          document.getElementById("inputText").value = text.trim();
+          alert("Documento DOCX caricato correttamente. Ora premi 'Analizza Testo'.");
+        })
+        .catch(err => {
+          console.error("Errore nel caricamento del DOCX:", err);
+          alert("Impossibile elaborare il file DOCX.");
+        });
     };
     reader.readAsArrayBuffer(file);
 
@@ -127,3 +145,5 @@ function loadFile() {
     alert("Formato non supportato. Carica un file .docx o .pdf.");
   }
 }
+
+document.getElementById("loadFileBtn").addEventListener("click", loadFile);
