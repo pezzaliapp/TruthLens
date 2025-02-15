@@ -10,13 +10,11 @@
 
   <!-- Manifest -->
   <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#007bff" />
 
-  <!-- Librerie PDF e DOCX -->
+  <!-- Librerie PDF e DOCX (CDN) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.1.0/docx.min.js"></script>
-
-  <!-- Colore barra del browser su mobile -->
-  <meta name="theme-color" content="#007bff" />
 </head>
 <body>
   <h1>TruthLens</h1>
@@ -30,12 +28,18 @@
 
   <!-- Sezione per caricare file .docx e .pdf -->
   <div class="file-upload">
-    <input type="file" id="fileInput" accept=".docx, .pdf" />
-    <button onclick="loadFile()">📂 Carica documento</button>
+    <label for="fileInput">Carica file (PDF o DOCX):</label>
+    <input
+      type="file"
+      id="fileInput"
+      accept=".pdf,.docx"
+      style="margin-left:10px"
+    />
+    <button onclick="loadFile()">Carica documento</button>
   </div>
 
   <!-- Pulsante per analizzare il testo -->
-  <button onclick="analyzeText()">🔍 Analizza</button>
+  <button onclick="analyzeText()">Analizza</button>
 
   <!-- Output dell'analisi -->
   <div id="output"></div>
