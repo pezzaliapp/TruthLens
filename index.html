@@ -5,16 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TruthLens - Analisi del testo</title>
 
-  <!-- Link al foglio di stile -->
+  <!-- Foglio di stile -->
   <link rel="stylesheet" href="style.css" />
 
   <!-- Manifest -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#007bff" />
 
-  <!-- Librerie PDF e DOCX (CDN) -->
+  <!-- Librerie PDF.js e Mammoth.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.1.0/docx.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
 </head>
 <body>
   <h1>TruthLens</h1>
@@ -25,21 +25,17 @@
 
   <!-- Area di testo per incollare manualmente il testo -->
   <textarea id="inputText" placeholder="Incolla qui il testo..." rows="6"></textarea>
+  <br>
+
+  <!-- Pulsante per analizzare il testo incollato -->
+  <button id="analyzeTextBtn">Analizza Testo</button>
 
   <!-- Sezione per caricare file .docx e .pdf -->
   <div class="file-upload">
     <label for="fileInput">Carica file (PDF o DOCX):</label>
-    <input
-      type="file"
-      id="fileInput"
-      accept=".pdf,.docx"
-      style="margin-left:10px"
-    />
-    <button onclick="loadFile()">Carica documento</button>
+    <input type="file" id="fileInput" accept=".pdf,.docx" />
+    <button id="loadFileBtn">Carica Documento</button>
   </div>
-
-  <!-- Pulsante per analizzare il testo -->
-  <button onclick="analyzeText()">Analizza</button>
 
   <!-- Output dell'analisi -->
   <div id="output"></div>
