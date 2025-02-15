@@ -63,3 +63,8 @@ button:hover {
   margin-top: 20px;
   font-size: 18px;
 }
+
+/* Nasconde il pulsante di installazione */
+.hidden {
+  display: none;
+}
