@@ -1,148 +1,142 @@
-/***********************************
- * REGISTRAZIONE SERVICE WORKER
- ***********************************/
+// REGISTRAZIONE DEL SERVICE WORKER
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./service-worker.js')
-      .then(() => console.log("Service Worker registrato correttamente!"))
-      .catch(err => console.error("Errore Service Worker:", err));
+      .then(() => console.log("Service Worker registrato"))
+      .catch(err => console.error("Service Worker non registrato", err));
   });
 }
 
-/***********************************
- * GESTIONE EVENTO BEFOREINSTALLPROMPT
- ***********************************/
-let deferredPrompt;
-const installBtn = document.getElementById('installBtn');
+// GESTIONE INSTALLAZIONE PWA
+let deferredInstallPrompt;
+const installButton = document.getElementById("installBtn");
 
-window.addEventListener('beforeinstallprompt', (e) => {
-  console.log('Evento beforeinstallprompt catturato!');
+window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
-  deferredPrompt = e;
-  installBtn.classList.remove('hidden');
+  deferredInstallPrompt = e;
+  installButton.classList.remove("hidden");
 });
 
-installBtn.addEventListener('click', () => {
-  if (!deferredPrompt) return;
-  installBtn.classList.add('hidden');
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.then((choiceResult) => {
-    if (choiceResult.outcome === 'accepted') {
-      console.log("PWA installata con successo.");
-    } else {
-      console.log("Installazione PWA annullata.");
-    }
-    deferredPrompt = null;
-  });
+installButton.addEventListener("click", () => {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then((choice) => {
+      console.log("Scelta installazione:", choice.outcome);
+      deferredInstallPrompt = null;
+      installButton.classList.add("hidden");
+    });
+  }
 });
 
-/***********************************
- * ANALISI DEL TESTO
- ***********************************/
-function analyzeText(text) {
-  const output = document.getElementById("output");
-  let warnings = [];
+// FUNZIONE DI ANALISI DEL TESTO
+function analizzaTesto(input) {
+  const resultDiv = document.getElementById("result");
+  let messaggi = [];
+  
+  // Esempio di parole problematiche
+  const paroleAssolute = ["sempre", "mai", "tutti", "nessuno", "ogni"];
+  const modificatori = ["deve", "bisogna", "impossibile"];
 
-  // Parole assolute e termini di enfatizzazione
-  const absoluteWords = ["sempre", "mai", "tutti", "nessuno", "ogni", "esclusivamente"];
-  const strongModifiers = ["deve", "bisogna", "necessario", "impossibile", "non può"];
-
-  absoluteWords.forEach(word => {
-    let regex = new RegExp(`(?:^|\\s)${word}(?:\\s|$)`, "gi");
+  paroleAssolute.forEach(parola => {
+    const regex = new RegExp(`\\b${parola}\\b`, "gi");
     let match;
-    while ((match = regex.exec(text)) !== null) {
-      let index = match.index;
-      let surroundingText = text.substring(Math.max(0, index - 15), Math.min(text.length, index + word.length + 15));
-      let hasStrongModifier = strongModifiers.some(mod => surroundingText.includes(mod));
-      if (hasStrongModifier) {
-        warnings.push(`⚠️ Affermazione assoluta rafforzata: "${word}"`);
-      } else if (!surroundingText.includes("in alcuni casi") && !surroundingText.includes("può accadere")) {
-        warnings.push(`⚠️ Affermazione assoluta: "${word}"`);
+    while ((match = regex.exec(input)) !== null) {
+      // Controlla 15 caratteri prima e dopo
+      let inizio = Math.max(0, match.index - 15);
+      let fine = Math.min(input.length, match.index + parola.length + 15);
+      const contesto = input.substring(inizio, fine).toLowerCase();
+      
+      const modificatorePresente = modificatori.some(mod => contesto.includes(mod));
+      if (modificatorePresente) {
+        messaggi.push(`⚠️ Affermazione assoluta rafforzata: "${parola}"`);
+      } else {
+        messaggi.push(`⚠️ Affermazione assoluta: "${parola}"`);
       }
     }
   });
-
-  // Calcolo del punteggio
-  let score = 100 - (warnings.length * 10);
-  if (score < 0) score = 0;
-
-  // Output
-  if (warnings.length > 0) {
-    output.innerHTML = `<strong>Punteggio di affidabilità: ${score}/100</strong><br><br>${warnings.join("<br>")}`;
+  
+  // Calcola un punteggio base
+  let punteggio = 100 - (messaggi.length * 10);
+  if (punteggio < 0) punteggio = 0;
+  
+  let outputHtml = `<strong>Punteggio di affidabilità: ${punteggio}/100</strong>`;
+  if (messaggi.length > 0) {
+    outputHtml += "<br><br>" + messaggi.join("<br>");
   } else {
-    output.innerHTML = `<strong>Punteggio di affidabilità: 100/100 ✅</strong><br>Nessuna manipolazione evidente.`;
+    outputHtml += "<br>Nessuna manipolazione rilevata.";
   }
+  
+  resultDiv.innerHTML = outputHtml;
 }
 
-document.getElementById("analyzeTextBtn").addEventListener("click", () => {
-  const text = document.getElementById("inputText").value;
-  if (!text.trim()) {
-    alert("Inserisci o carica del testo prima di analizzare.");
+// GESTIONE ANALISI DEL TESTO MANUALE
+document.getElementById("analyzeManualBtn").addEventListener("click", () => {
+  const testo = document.getElementById("manualText").value;
+  if (!testo.trim()) {
+    alert("Inserisci del testo prima di analizzare.");
     return;
   }
-  analyzeText(text);
+  analizzaTesto(testo);
 });
 
-/***********************************
- * CARICAMENTO FILE .PDF E .DOCX
- ***********************************/
-function loadFile() {
-  const fileInput = document.getElementById("fileInput");
+// GESTIONE CARICAMENTO E ANALISI DOCUMENTO
+document.getElementById("uploadBtn").addEventListener("click", () => {
+  const fileInput = document.getElementById("docInput");
   const file = fileInput.files[0];
+  
   if (!file) {
-    alert("Seleziona un file prima di caricare.");
+    alert("Seleziona un file prima di procedere.");
     return;
   }
-
+  
   const reader = new FileReader();
-
+  
   if (file.name.toLowerCase().endsWith(".pdf")) {
-    // Elaborazione PDF con PDF.js
-    reader.onload = function() {
-      const typedarray = new Uint8Array(this.result);
-      pdfjsLib.getDocument(typedarray).promise.then(pdf => {
-        let text = "";
-        let promises = [];
+    // Gestione PDF con pdf.js
+    reader.onload = function () {
+      const typedArray = new Uint8Array(this.result);
+      pdfjsLib.getDocument(typedArray).promise.then(pdf => {
+        let testoCompleto = "";
+        let pagine = [];
         for (let i = 1; i <= pdf.numPages; i++) {
-          promises.push(
+          pagine.push(
             pdf.getPage(i).then(page => 
-              page.getTextContent().then(tc => {
-                tc.items.forEach(item => text += item.str + " ");
+              page.getTextContent().then(content => {
+                content.items.forEach(item => {
+                  testoCompleto += item.str + " ";
+                });
               })
             )
           );
         }
-        Promise.all(promises).then(() => {
-          document.getElementById("inputText").value = text.trim();
-          alert("Documento PDF caricato correttamente. Ora premi 'Analizza Testo'.");
+        Promise.all(pagine).then(() => {
+          document.getElementById("manualText").value = testoCompleto.trim();
+          analizzaTesto(testoCompleto);
         });
       }).catch(err => {
-        console.error("Errore nel caricamento del PDF:", err);
-        alert("Impossibile elaborare il file PDF.");
+        console.error("Errore PDF:", err);
+        alert("Errore nel caricamento del PDF.");
       });
     };
     reader.readAsArrayBuffer(file);
-
+    
   } else if (file.name.toLowerCase().endsWith(".docx")) {
-    // Elaborazione DOCX con Mammoth.js
-    reader.onload = function(event) {
-      const arrayBuffer = event.target.result;
-      mammoth.extractRawText({ arrayBuffer: arrayBuffer })
+    // Gestione DOCX con Mammoth.js
+    reader.onload = function (event) {
+      mammoth.extractRawText({ arrayBuffer: event.target.result })
         .then(result => {
-          const text = result.value;
-          document.getElementById("inputText").value = text.trim();
-          alert("Documento DOCX caricato correttamente. Ora premi 'Analizza Testo'.");
+          const testo = result.value;
+          document.getElementById("manualText").value = testo.trim();
+          analizzaTesto(testo);
         })
         .catch(err => {
-          console.error("Errore nel caricamento del DOCX:", err);
-          alert("Impossibile elaborare il file DOCX.");
+          console.error("Errore DOCX:", err);
+          alert("Errore nel caricamento del DOCX.");
         });
     };
     reader.readAsArrayBuffer(file);
-
+    
   } else {
-    alert("Formato non supportato. Carica un file .docx o .pdf.");
+    alert("Formato non supportato. Usa PDF o DOCX.");
   }
-}
-
-document.getElementById("loadFileBtn").addEventListener("click", loadFile);
+});
