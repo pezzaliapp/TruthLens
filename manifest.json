@@ -1,7 +1,7 @@
 {
   "name": "TruthLens",
   "short_name": "TruthLens",
-  "description": "Analizza testi e documenti per individuare possibili manipolazioni e bias.",
+  "description": "Analizza documenti per individuare possibili manipolazioni.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
