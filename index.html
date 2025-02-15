@@ -3,53 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Test Pulsante Upload</title>
+  <title>Test File Upload iOS</title>
   <style>
     body {
-      margin: 0;
-      padding: 0;
       font-family: Arial, sans-serif;
-      background: #f4f4f4;
+      background-color: #f4f4f4;
+      color: #333;
+      padding: 20px;
       text-align: center;
-      padding-top: 50px;
     }
     .upload-container {
-      background: #fff;
-      padding: 20px;
+      margin: 20px auto;
+      padding: 15px;
       border: 1px solid #ccc;
-      border-radius: 5px;
-      display: inline-block;
+      background-color: #fff;
+      border-radius: 4px;
+      max-width: 400px;
     }
-    input[type="file"] {
-      display: block;
-      margin: 15px auto;
+    .upload-container h2 {
+      margin-bottom: 10px;
+    }
+    .upload-container input[type="file"] {
+      margin-bottom: 10px;
+    }
+    .upload-container button {
+      padding: 10px 20px;
       font-size: 16px;
-    }
-    button {
       background-color: #28a745;
       color: white;
-      padding: 10px 20px;
       border: none;
-      border-radius: 5px;
-      font-size: 16px;
+      border-radius: 4px;
       cursor: pointer;
     }
-    button:hover {
+    .upload-container button:hover {
       background-color: #218838;
     }
   </style>
 </head>
 <body>
+  <h1>Test File Upload</h1>
   <div class="upload-container">
-    <h1>Carica Documento</h1>
+    <h2>Carica Documento</h2>
     <input type="file" id="fileInput" accept=".pdf,.docx">
-    <button id="uploadButton">Carica Documento</button>
+    <br>
+    <button id="uploadBtn">Carica Documento</button>
   </div>
   <script>
-    document.getElementById("uploadButton").addEventListener("click", function() {
+    document.getElementById("uploadBtn").addEventListener("click", () => {
       const fileInput = document.getElementById("fileInput");
-      if (fileInput.files.length === 0) {
-        alert("Nessun file selezionato.");
+      if (!fileInput.files[0]) {
+        alert("Seleziona un file prima di procedere.");
       } else {
         alert("File selezionato: " + fileInput.files[0].name);
       }
