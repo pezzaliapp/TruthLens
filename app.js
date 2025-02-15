@@ -68,13 +68,12 @@ function analyzeText(text) {
 
   // Output
   if (warnings.length > 0) {
-    output.innerHTML = `<strong>Punteggio di affidabilità: ${score}/100</strong><br><br>` + warnings.join("<br>");
+    output.innerHTML = `<strong>Punteggio di affidabilità: ${score}/100</strong><br><br>${warnings.join("<br>")}`;
   } else {
     output.innerHTML = `<strong>Punteggio di affidabilità: 100/100 ✅</strong><br>Nessuna manipolazione evidente.`;
   }
 }
 
-// Evento per analizzare il testo incollato
 document.getElementById("analyzeTextBtn").addEventListener("click", () => {
   const text = document.getElementById("inputText").value;
   if (!text.trim()) {
