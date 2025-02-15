@@ -39,7 +39,7 @@ textarea {
   justify-content: center;
   align-items: center;
   gap: 10px;
-  /* Per sicurezza, aggiungiamo un bordo di debug (rimuovere in produzione) */
+  /* Debug: rimuovi il bordo in produzione */
   /* border: 1px solid red; */
 }
 
