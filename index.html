@@ -15,18 +15,15 @@
   <!-- Manifest PWA -->
   <link rel="manifest" href="manifest.json">
 
-  <script>
-    // Registra il Service Worker per il supporto offline
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log("Service Worker registrato correttamente!"))
-        .catch(err => console.log("Errore Service Worker:", err));
-    }
-  </script>
+  <!-- Colore della barra in Chrome su Android -->
+  <meta name="theme-color" content="#007bff">
 </head>
 <body>
   <h1>TruthLens</h1>
   <p>Inserisci un testo o carica un documento per analizzarne la possibile manipolazione.</p>
+
+  <!-- Pulsante nascosto per l'installazione della PWA -->
+  <button id="installBtn" class="hidden">Installa PWA</button>
 
   <!-- Area di testo per incollare manualmente il testo -->
   <textarea id="inputText" placeholder="Incolla qui il testo..." rows="6"></textarea>
