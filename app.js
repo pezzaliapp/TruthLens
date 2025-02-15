@@ -3,35 +3,30 @@ function analyzeText() {
     let output = document.getElementById("output");
     let warnings = [];
 
-    // Parole sospette
-    const warningWords = ["scioccante", "urgente", "segreto", "non vogliono che tu sappia", "incredibile", "scandalo"];
-    
-    // Controlla parole sospette
-    warningWords.forEach(word => {
-        if (text.toLowerCase().includes(word)) {
-            warnings.push(`🔴 Parola sospetta: "${word}"`);
-        }
-    });
+    // Parole assolute e termini di enfatizzazione
+    const absoluteWords = ["sempre", "mai", "tutti", "nessuno", "ogni", "esclusivamente"];
+    const strongModifiers = ["deve", "bisogna", "necessario", "impossibile", "non può"];
 
-    // Controlla eccesso di maiuscole
-    if ((text.match(/[A-Z]{5,}/g) || []).length > 3) {
-        warnings.push("⚠️ Uso eccessivo di MAIUSCOLE, possibile manipolazione emotiva.");
-    }
-
-    // Controlla punteggiatura esagerata
-    if ((text.match(/!{3,}|\.{3,}|\?{3,}/g) || []).length > 0) {
-        warnings.push("⚠️ Punteggiatura esagerata rilevata (!!!, ???, ...).");
-    }
-
-    // Controlla affermazioni assolute
-    const absoluteWords = ["sempre", "mai", "tutti", "nessuno"];
+    // Controlla affermazioni assolute con contesto
     absoluteWords.forEach(word => {
-        if (text.toLowerCase().includes(word)) {
-            warnings.push(`⚠️ Affermazione assoluta: "${word}", verifica il contesto.`);
+        let regex = new RegExp(`(?:^|\\s)${word}(?:\\s|$)`, "gi"); // Trova la parola isolata
+        let match;
+        while ((match = regex.exec(text)) !== null) {
+            let index = match.index;
+            let surroundingText = text.substring(Math.max(0, index - 15), Math.min(text.length, index + word.length + 15));
+
+            // Verifica se la parola è rafforzata da un termine problematico
+            let hasStrongModifier = strongModifiers.some(modifier => surroundingText.includes(modifier));
+            
+            if (hasStrongModifier) {
+                warnings.push(`⚠️ Affermazione assoluta rafforzata: "${word}", verifica il contesto.`);
+            } else if (!surroundingText.includes("in alcuni casi") && !surroundingText.includes("può accadere")) {
+                warnings.push(`⚠️ Affermazione assoluta: "${word}", verifica il contesto.`);
+            }
         }
     });
 
-    // Assegna punteggio di affidabilità (più warning, più basso il punteggio)
+    // Calcola il punteggio di affidabilità
     let score = 100 - (warnings.length * 10);
     score = score < 0 ? 0 : score;
 
