@@ -16,6 +16,11 @@ p {
   margin-bottom: 20px;
 }
 
+/* Pulsante di installazione nascosto di default */
+.hidden {
+  display: none;
+}
+
 /* Area di testo */
 textarea {
   width: 90%;
@@ -62,9 +67,4 @@ button:hover {
 #output {
   margin-top: 20px;
   font-size: 18px;
-}
-
-/* Nasconde il pulsante di installazione */
-.hidden {
-  display: none;
 }
