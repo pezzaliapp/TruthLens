@@ -1,6 +1,7 @@
 {
   "name": "TruthLens",
   "short_name": "TruthLens",
+  "description": "Analizza testi e documenti per individuare possibili manipolazioni e bias.",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#f4f4f4",
@@ -15,6 +16,16 @@
       "src": "icons/TruthLens-512.png",
       "sizes": "512x512",
       "type": "image/png"
+    }
+  ],
+  "permissions": [
+    "storage",
+    "unlimitedStorage"
+  ],
+  "file_handlers": [
+    {
+      "extensions": [".docx", ".pdf"],
+      "action": "index.html"
     }
   ]
 }
