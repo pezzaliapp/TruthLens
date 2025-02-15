@@ -2,14 +2,13 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Analisi Testo - PDF & DOCX</title>
+  <title>Analisi Testo con Sentiment</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Librerie esterne PDF.js e Mammoth.js -->
+  
+  <!-- Librerie esterne per PDF.js e Mammoth.js (se usate per il caricamento file) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
-
-  <!-- Stili di base -->
+  
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -18,13 +17,6 @@
       text-align: center;
       padding: 20px;
       margin: 0;
-    }
-    h1 {
-      margin-bottom: 10px;
-    }
-    p {
-      font-size: 16px;
-      margin-bottom: 20px;
     }
     .container {
       max-width: 600px;
@@ -70,84 +62,131 @@
       border: 1px solid #ccc;
       padding: 15px;
       border-radius: 4px;
-      white-space: pre-wrap; /* per mostrare eventuali a capo */
+      white-space: pre-wrap;
     }
   </style>
 </head>
 <body>
-
   <div class="container">
-    <h1>Analisi Testo</h1>
-    <p>Puoi incollare manualmente del testo oppure caricare un file PDF/DOCX.</p>
-
-    <!-- Textarea per testo manuale -->
+    <h1>Analisi Testo con Sentiment</h1>
+    <p>Incolla il testo oppure carica un file (PDF o DOCX) e analizza sia le affermazioni assolute che il sentiment complessivo.</p>
+    
+    <!-- Area per testo manuale -->
     <textarea id="textInput" placeholder="Incolla qui il testo..."></textarea>
-
-    <!-- Pulsante per analizzare il testo manuale -->
     <div class="buttons">
       <button id="analyzeBtn">Analizza Testo</button>
     </div>
-
-    <!-- Sezione caricamento file -->
+    
+    <!-- Sezione per caricamento file -->
     <h2>Carica File (PDF o DOCX)</h2>
     <input type="file" id="fileInput" accept=".pdf,.docx" />
     <button id="loadBtn">Carica File</button>
-
-    <!-- Output -->
+    
+    <!-- Output dei risultati -->
     <div id="output"></div>
   </div>
-
+  
   <script>
     /******************************************
-     * FUNZIONE DI ANALISI TESTO
+     * ANALISI DEL SENTIMENT (dizionario AFINN minimale)
+     ******************************************/
+    // Questo dizionario contiene un sottoinsieme di parole e i loro punteggi di sentiment
+    const afinn = {
+      "buono": 3,
+      "eccellente": 5,
+      "fantastico": 4,
+      "positivo": 2,
+      "felice": 3,
+      "piacevole": 2,
+      "male": -3,
+      "cattivo": -3,
+      "orribile": -4,
+      "negativo": -2,
+      "triste": -3,
+      "pessimo": -5,
+      "deludente": -3
+      // Puoi espandere questo dizionario aggiungendo altre parole
+    };
+
+    function analyzeSentiment(text) {
+      // Rimuove la punteggiatura e tokenizza
+      const words = text
+        .toLowerCase()
+        .replace(/[^\w\s]/g, "")
+        .split(/\s+/)
+        .filter(Boolean);
+      
+      let sentimentScore = 0;
+      words.forEach(word => {
+        if (afinn.hasOwnProperty(word)) {
+          sentimentScore += afinn[word];
+        }
+      });
+      
+      return sentimentScore;
+    }
+    
+    /******************************************
+     * ANALISI DEL TESTO "AVANZATA" (con regole per parole assolute)
      ******************************************/
     function analyzeText(text) {
       const outputDiv = document.getElementById("output");
-      outputDiv.innerHTML = ""; // reset
-
-      // Liste di parole da cercare
-      const paroleAssolute = ["sempre", "mai", "tutti", "nessuno", "ogni", "esclusivamente"];
-      const modificatoriForti = ["deve", "bisogna", "necessario", "impossibile", "non può"];
-
-      let warnings = [];
-
-      // Cerchiamo ogni parola assoluta nel testo
-      paroleAssolute.forEach(parola => {
-        let regex = new RegExp("\\b" + parola + "\\b", "gi");
-        let match;
-        while ((match = regex.exec(text)) !== null) {
-          let index = match.index;
-          // Controllo del contesto intorno alla parola (15 caratteri prima e dopo)
-          let start = Math.max(0, index - 15);
-          let end = Math.min(text.length, index + parola.length + 15);
-          let surrounding = text.substring(start, end).toLowerCase();
-
-          // Verifichiamo se c'è un modificatore forte vicino
-          const hasStrongModifier = modificatoriForti.some(m => surrounding.includes(m));
-
-          if (hasStrongModifier) {
-            warnings.push(`⚠️ Affermazione assoluta rafforzata: "${parola}"`);
-          } else {
-            warnings.push(`⚠️ Affermazione assoluta: "${parola}"`);
-          }
+      
+      // Tokenizzazione per la logica delle "affermazioni assolute"
+      const words = text
+        .toLowerCase()
+        .replace(/[.,?!;:()"]/g, "")
+        .split(/\s+/)
+        .filter(Boolean);
+      const totalWords = words.length || 1;
+      
+      // Set di parole considerate "assolute" e modificatori forti
+      const absoluteWords = new Set(["sempre", "mai", "tutti", "nessuno"]);
+      const strongModifiers = new Set(["deve", "bisogna", "necessario", "impossibile", "non può"]);
+      
+      let absoluteCount = 0;
+      let strongCount = 0;
+      
+      words.forEach(word => {
+        if (absoluteWords.has(word)) {
+          absoluteCount++;
+        }
+        if (strongModifiers.has(word)) {
+          strongCount++;
         }
       });
-
-      // Calcolo punteggio
-      let score = 100 - (warnings.length * 10);
+      
+      const frequency = absoluteCount / totalWords;
+      let penalty = frequency * 100 + strongCount * 5;
+      if (penalty > 50) penalty = 50;
+      let score = 100 - penalty;
       if (score < 0) score = 0;
-
-      // Mostra risultati
-      let resultMsg = `Punteggio di affidabilità: ${score}/100`;
-      if (warnings.length > 0) {
-        resultMsg += "\n\n" + warnings.join("\n");
+      
+      // Analisi del sentiment
+      const sentimentScore = analyzeSentiment(text);
+      let sentimentMsg = "";
+      if (sentimentScore > 0) {
+        sentimentMsg = "Sentiment: Positivo";
+      } else if (sentimentScore < 0) {
+        sentimentMsg = "Sentiment: Negativo";
       } else {
-        resultMsg += "\nNessuna manipolazione evidente.";
+        sentimentMsg = "Sentiment: Neutro";
       }
-
+      
+      let warnings = [];
+      if (absoluteCount > 0) {
+        warnings.push(`Rilevate ${absoluteCount} occorrenze di parole assolute.`);
+      }
+      if (strongCount > 0) {
+        warnings.push(`Rilevati ${strongCount} modificatori forti.`);
+      }
+      
+      let resultMsg = `Punteggio di affidabilità: ${score.toFixed(0)}/100\n${sentimentMsg}\n\n`;
+      resultMsg += warnings.length > 0 ? warnings.join("\n") : "Nessuna manipolazione evidente.";
+      
       outputDiv.textContent = resultMsg;
     }
-
+    
     /******************************************
      * EVENTO: ANALIZZA TESTO MANUALE
      ******************************************/
@@ -159,22 +198,21 @@
       }
       analyzeText(text);
     });
-
+    
     /******************************************
      * EVENTO: CARICA FILE (PDF O DOCX)
      ******************************************/
     document.getElementById("loadBtn").addEventListener("click", () => {
       const fileInput = document.getElementById("fileInput");
       const file = fileInput.files[0];
-
+      
       if (!file) {
         alert("Seleziona un file prima di procedere.");
         return;
       }
-
+      
       const reader = new FileReader();
-
-      // Se è PDF
+      
       if (file.name.toLowerCase().endsWith(".pdf")) {
         reader.onload = function() {
           const typedArray = new Uint8Array(this.result);
@@ -193,9 +231,7 @@
               );
             }
             Promise.all(promises).then(() => {
-              // Inseriamo il testo estratto nella textarea
               document.getElementById("textInput").value = textContent.trim();
-              // Analizziamo subito il testo
               analyzeText(textContent);
             });
           }).catch(err => {
@@ -204,17 +240,14 @@
           });
         };
         reader.readAsArrayBuffer(file);
-
-      // Se è DOCX
+      
       } else if (file.name.toLowerCase().endsWith(".docx")) {
         reader.onload = function(event) {
           const arrayBuffer = event.target.result;
           mammoth.extractRawText({ arrayBuffer: arrayBuffer })
             .then(result => {
               const extractedText = result.value;
-              // Inseriamo il testo estratto nella textarea
               document.getElementById("textInput").value = extractedText.trim();
-              // Analizziamo subito il testo
               analyzeText(extractedText);
             })
             .catch(err => {
@@ -223,7 +256,7 @@
             });
         };
         reader.readAsArrayBuffer(file);
-
+      
       } else {
         alert("Formato non supportato. Carica un file PDF o DOCX.");
       }
