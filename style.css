@@ -1,73 +1,117 @@
-/* Stile generale */
+/* Reset base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   font-family: Arial, sans-serif;
-  text-align: center;
-  padding: 20px;
   background-color: #f4f4f4;
-}
-
-h1 {
   color: #333;
+  padding: 20px;
+  text-align: center;
 }
 
-p {
+header h1 {
+  margin-bottom: 10px;
+}
+
+header p {
   font-size: 18px;
-  color: #666;
   margin-bottom: 20px;
 }
 
-/* Pulsante di installazione nascosto di default */
-.hidden {
-  display: none;
+/* Sezioni */
+section {
+  margin: 20px auto;
+  max-width: 600px;
 }
 
-/* Area di testo */
-textarea {
-  width: 90%;
-  height: 150px;
-  margin-bottom: 10px;
+/* Area testo manuale */
+#textSection textarea {
+  width: 100%;
   padding: 10px;
   font-size: 16px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 4px;
+  resize: vertical;
 }
 
-/* Sezione di caricamento file */
-.file-upload {
-  margin: 20px 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  /* Debug: rimuovi il bordo in produzione */
-  /* border: 1px solid red; */
-}
-
-input[type="file"] {
-  padding: 5px;
-  border: 1px solid #ccc;
-  background-color: white;
-  cursor: pointer;
-}
-
-/* Pulsanti */
-button {
-  padding: 10px 15px;
+#textSection button {
+  margin-top: 10px;
+  padding: 10px 20px;
   font-size: 16px;
   background-color: #007bff;
   color: white;
   border: none;
+  border-radius: 4px;
   cursor: pointer;
-  border-radius: 5px;
-  margin: 10px;
 }
 
-button:hover {
+#textSection button:hover {
   background-color: #0056b3;
 }
 
-/* Sezione di output */
-#output {
-  margin-top: 20px;
-  font-size: 18px;
+/* Sezione upload */
+#uploadSection {
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+#uploadSection h2 {
+  margin-bottom: 10px;
+}
+
+#uploadSection input[type="file"] {
+  margin-bottom: 10px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+#uploadSection button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#uploadSection button:hover {
+  background-color: #218838;
+}
+
+/* Sezione risultati */
+#resultSection {
+  margin-top: 30px;
+}
+
+#result {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 4px;
+  min-height: 50px;
+}
+
+/* Pulsante installazione PWA */
+.hidden {
+  display: none;
+}
+
+#installBtn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #ffc107;
+  color: #333;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
